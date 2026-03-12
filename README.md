@@ -8,8 +8,8 @@ cd mkdir haplogroup-frequency
 git init
 git remote add origin https://github.com/Chitz01/Haplogroup-frequency.git
 
-# created a file - app.py
-# hello world page- title with description
+# app.py - hello world page- title with description
+# requirements.txt - all the necessary libraries
 
 git add .
 git commit -m "Commit 1: Basic page with title and description"
