@@ -16,4 +16,22 @@ git commit -m "Commit 1: Basic page with title and description"
 git branch -M main
 git push -u origin main
 
+# test locally
+
+# Create a virtual environment
+python3 -m venv .venv
+# Activate your virtual environment
+source .venv/bin/activate
+# Install packages (first time only)
+pip install -r requirements.txt
+# Run the app
+streamlit run app.py
+
+git add .
+git commit -m "Commit 2: Added file upload and display data as a table"
+git push
+
+
+
+
 
