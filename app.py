@@ -45,3 +45,55 @@ st.success(f"File loaded! Found {len(df)} individuals from {df['Country'].nuniqu
 st.subheader("Raw Data")
 st.write("Here are the first 50 rows:")
 st.dataframe(df.head(50))
+
+st.divider()
+
+# ---- Search section ----
+st.subheader("Step 2: Search for a haplogroup")
+
+haplo_type = st.radio("Choose DNA type", ["Y-DNA", "mtDNA"], horizontal=True)
+haplogroup = st.text_input("Type a haplogroup", placeholder="e.g. R1b or H or U5")
+
+if st.button("Search"):
+
+    # figure out which column to look in
+    if haplo_type == "Y-DNA":
+        col = "Y Haplo"
+    else:
+        col = "mt Haplo"
+
+    # count matches per country
+    results = []
+    for country, group in df.groupby("Country"):
+        total   = len(group[group[col] != ""])
+        matches = group[group[col].str.startswith(haplogroup, na=False)]
+        count   = len(matches)
+        if count > 0:
+            results.append({
+                "Country":       country,
+                "Matches":       count,
+                "Total Sampled": total,
+                "Frequency %":   round(count / total * 100, 1),
+            })
+
+    if len(results) == 0:
+        st.error(f"No results found for {haplogroup}.")
+    else:
+        result_df = pd.DataFrame(results)
+        result_df = result_df.sort_values("Frequency %", ascending=False)
+
+        st.write(f"Found **{haplogroup}** in **{len(result_df)}** countries.")
+
+        # simple bar chart
+        fig = px.bar(
+            result_df.head(15),
+            x="Country",
+            y="Frequency %",
+            title=f"{haplogroup} frequency by country (top 15)",
+            color="Frequency %",
+            color_continuous_scale="blues",
+        )
+        st.plotly_chart(fig)
+
+        # results table
+        st.dataframe(result_df)
