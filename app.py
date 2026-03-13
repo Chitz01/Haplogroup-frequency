@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import csv
 import io
+import plotly.express as px
 
 st.title("Haplogroup Frequency Explorer")
 st.write("This app shows where ancient DNA haplogroups are found around the world.")
