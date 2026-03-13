@@ -4,6 +4,8 @@ import csv
 import io
 import plotly.express as px
 
+st.set_page_config(layout="wide")   # makes the page wider
+
 st.title("Haplogroup Frequency Explorer")
 st.write("This app shows where ancient DNA haplogroups are found around the world.")
 
@@ -79,22 +81,43 @@ if st.button("Search"):
 
     if len(results) == 0:
         st.error(f"No results found for {haplogroup}.")
+        st.info("Tip: H, U5, J, T, K are mtDNA haplogroups — switch to mtDNA above.")
     else:
         result_df = pd.DataFrame(results)
         result_df = result_df.sort_values("Frequency %", ascending=False)
 
         st.write(f"Found **{haplogroup}** in **{len(result_df)}** countries.")
 
-        # simple bar chart
-        fig = px.bar(
+        # ---- World map ----
+        st.subheader("World Map")
+        fig_map = px.choropleth(
+            result_df,
+            locations="Country",
+            locationmode="country names",
+            color="Frequency %",
+            hover_name="Country",
+            hover_data=["Matches", "Total Sampled"],
+            color_continuous_scale="blues",
+            title=f"{haplogroup} frequency by country",
+        )
+        st.plotly_chart(fig_map, use_container_width=True)
+
+        # ---- Bar chart ----
+        st.subheader("Top 15 Countries")
+        fig_bar = px.bar(
             result_df.head(15),
             x="Country",
             y="Frequency %",
-            title=f"{haplogroup} frequency by country (top 15)",
             color="Frequency %",
             color_continuous_scale="blues",
+            text="Frequency %",
+            title=f"{haplogroup} — top 15 countries",
         )
-        st.plotly_chart(fig)
+        fig_bar.update_traces(texttemplate="%{text}%", textposition="outside")
+        st.plotly_chart(fig_bar, use_container_width=True)
 
-        # results table
+        # ---- Table ----
+        st.subheader("Full Results")
         st.dataframe(result_df)
+
+        
